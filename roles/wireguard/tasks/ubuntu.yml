@@ -1,13 +1,10 @@
 ---
 - block:
-  - name: WireGuard repository configured
+  - name: WireGuard repository configured (Debian)
     apt_repository:
-      repo: ppa:wireguard/wireguard
+      repo: 'deb http://deb.debian.org/debian buster-backports main'
       state: present
-    register: result
-    until: result is succeeded
-    retries: 10
-    delay: 3
+      update_cache: yes
 
   - name: Configure unattended-upgrades
     copy:
@@ -16,12 +13,13 @@
       owner: root
       group: root
       mode: 0644
-  when: ansible_facts['distribution_version'] is version('20.04', '<')
+  when: ansible_distribution == 'Debian'
 
 - name: WireGuard installed
   apt:
     name: wireguard
     state: present
+    default_release: buster-backports
     update_cache: true
 
 - name: WireGuard reload-module-on-update
